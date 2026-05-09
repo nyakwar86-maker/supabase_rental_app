@@ -1,0 +1,158 @@
+# Create public directory for static files
+mkdir -p public
+
+# Create test.html
+echo '<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental Marketplace Server Test</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        .status {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .endpoints {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .endpoint {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .endpoint a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .endpoint a:hover {
+            text-decoration: underline;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #5a67d8;
+        }
+        .server-info {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏠 Rental Marketplace Server</h1>
+        
+        <div class="status" id="status">
+            🔄 Checking server status...
+        </div>
+        
+        <div class="endpoints">
+            <h3>📡 Available Endpoints:</h3>
+            <div class="endpoint">
+                <strong>GET</strong> 
+                <a href="/" target="_blank">/</a> - API Home
+            </div>
+            <div class="endpoint">
+                <strong>GET</strong> 
+                <a href="/health" target="_blank">/health</a> - Health Check
+            </div>
+            <div class="endpoint">
+                <strong>GET</strong> 
+                <a href="/api/test" target="_blank">/api/test</a> - Test Endpoint
+            </div>
+        </div>
+        
+        <div>
+            <button class="btn" onclick="testAPI()">Test API Connection</button>
+            <button class="btn" onclick="checkHealth()">Check Health</button>
+            <button class="btn" onclick="location.reload()">Refresh</button>
+        </div>
+        
+        <div class="server-info">
+            <h3>ℹ️ Server Information:</h3>
+            <p><strong>Port:</strong> <span id="port">5000</span></p>
+            <p><strong>Environment:</strong> <span id="env">development</span></p>
+            <p><strong>Uptime:</strong> <span id="uptime">--</span></p>
+        </div>
+    </div>
+    
+    <script>
+        async function testAPI() {
+            try {
+                const response = await fetch('/api/test');
+                const data = await response.json();
+                alert(`✅ API Test Successful!\nMessage: ${data.message}\nTime: ${data.data.time}`);
+            } catch (error) {
+                alert(`❌ API Test Failed:\n${error.message}`);
+            }
+        }
+        
+        async function checkHealth() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                document.getElementById('status').innerHTML = 
+                    `✅ Server is healthy<br>Last check: ${new Date(data.timestamp).toLocaleTimeString()}`;
+                document.getElementById('status').style.background = '#e8f5e9';
+                document.getElementById('status').style.color = '#2e7d32';
+                document.getElementById('uptime').textContent = Math.floor(data.uptime) + ' seconds';
+            } catch (error) {
+                document.getElementById('status').innerHTML = 
+                    `❌ Server is not responding<br>Error: ${error.message}`;
+                document.getElementById('status').style.background = '#ffebee';
+                document.getElementById('status').style.color = '#c62828';
+            }
+        }
+        
+        // Check server status on load
+        window.onload = checkHealth;
+        
+        // Auto-refresh uptime every 5 seconds
+        setInterval(checkHealth, 5000);
+    </script>
+</body>
+</html>' > public/test.html
